@@ -22,11 +22,11 @@ passive/
 
 ## Checklist
 
-### Phase 1 — Scaffolding
-- [ ] Create `passive.py` with `argparse` (flags: `-fn`, `-ip`, `-u`, `--help`)
-- [ ] Create `output.py` with sequential file naming logic (`result.txt` → `result2.txt` → ...)
-- [ ] Create `modules/` package with empty files
-- [ ] Create `requirements.txt`
+### Phase 1 — Scaffolding ✅
+- [x] Create `passive.py` with `argparse` (flags: `-fn`, `-ip`, `-u`, `--help`)
+- [x] Create `output.py` with sequential file naming logic (`result.txt` → `result2.txt` → ...)
+- [x] Create `modules/` package with empty files
+- [x] Create `requirements.txt`
 
 ### Phase 2 — IP Lookup (`-ip`)
 - [ ] Use `ip-api.com` free JSON endpoint (no key needed)
