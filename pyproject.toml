@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "passive"
+version = "1.0.0"
+description = "Passive OSINT CLI tool for IP, username, and full name lookups"
+requires-python = ">=3.8"
+dependencies = ["requests"]
+
+[project.scripts]
+# Registers the `passive` command so it can be run from anywhere after `pip install -e .`
+passive = "passive:main"
+
+[tool.setuptools]
+py-modules = ["passive", "output"]
