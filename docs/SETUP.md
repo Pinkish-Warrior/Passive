@@ -223,6 +223,27 @@ passive/
 
 ---
 
+## Audit
+
+Run the automated audit script to verify every check from `docs/AUDIT.md` passes:
+
+```bash
+source venv/bin/activate && bash audit.sh
+```
+
+The script checks:
+- All required files are present
+- The `passive` command is registered and `--help` shows the correct banner
+- `-ip 127.0.0.1` returns ISP and City Lat/Lon fields
+- Sequential file naming works (no result file is overwritten)
+- `-u "@user01"` checks at least 5 social platforms
+- `-fn "Jean Dupont"` displays an address and phone number
+
+Output is colour-coded — green `[PASS]` / red `[FAIL]` — with a summary at the end.
+The Playwright sections (`-u` and `-fn`) take 30–60 seconds each.
+
+---
+
 ## Common issues
 
 | Problem | Cause | Fix |
