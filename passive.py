@@ -5,6 +5,8 @@
 
 import argparse
 import sys
+import requests
+
 from modules.ip_lookup import lookup_ip
 from modules.username import lookup_username
 from modules.fullname import lookup_fullname
@@ -12,33 +14,29 @@ from output import save_result
 
 BANNER = "Welcome to passive v1.0.0"
 
-OPTIONS = """
-OPTIONS:
+OPTIONS = """OPTIONS:
     -fn         Search with full-name
     -ip         Search with ip address
-    -u          Search with username
-"""
+    -u          Search with username"""
 
 
 def build_parser():
     # Only one flag allowed per run; all three are mutually exclusive
     parser = argparse.ArgumentParser(
-        description=BANNER,
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=OPTIONS,
+        description=f"{BANNER}\n\n{OPTIONS}",
         add_help=True,
     )
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("-fn", metavar="FULL_NAME", help="Search by full name")
-    group.add_argument("-ip", metavar="IP_ADDRESS", help="Search by IP address")
-    group.add_argument("-u", metavar="USERNAME", help="Search by username")
+    group.add_argument("-fn", metavar="FULL_NAME",   help="Search by full name")
+    group.add_argument("-ip", metavar="IP_ADDRESS",  help="Search by IP address")
+    group.add_argument("-u",  metavar="USERNAME",    help="Search by username")
     return parser
 
 
 def main():
     parser = build_parser()
 
-    # Show help when no arguments are passed
     if len(sys.argv) == 1:
         print(BANNER)
         parser.print_help()
@@ -53,6 +51,21 @@ def main():
             result = lookup_username(args.u)
         elif args.fn:
             result = lookup_fullname(args.fn)
+    except ValueError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+    except requests.exceptions.ConnectionError:
+        print("Error: No internet connection or host unreachable.")
+        sys.exit(1)
+    except requests.exceptions.Timeout:
+        print("Error: Request timed out — the server took too long to respond.")
+        sys.exit(1)
+    except requests.exceptions.RequestException as e:
+        print(f"Error: Network error — {e}")
+        sys.exit(1)
+    except KeyboardInterrupt:
+        print("\nAborted.")
+        sys.exit(0)
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)
