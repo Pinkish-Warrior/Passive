@@ -28,39 +28,39 @@ passive/
 - [x] Create `modules/` package with empty files
 - [x] Create `requirements.txt`
 
-### Phase 2 — IP Lookup (`-ip`)
-- [ ] Use `ip-api.com` free JSON endpoint (no key needed)
-- [ ] Extract: city, ISP, lat/lon, country
-- [ ] Format output to match spec
-- [ ] Write result to output file
+### Phase 2 — IP Lookup (`-ip`) ✅
+- [x] Use `ip-api.com` free JSON endpoint (no key needed)
+- [x] Extract: city, ISP, lat/lon, country
+- [x] Format output to match spec
+- [x] Write result to output file
 
-### Phase 3 — Username Check (`-u`)
-- [ ] Strip leading `@` from input
-- [ ] Check 5+ platforms via HTTP HEAD/GET requests:
-  - [ ] GitHub
-  - [ ] Instagram
-  - [ ] Twitter/X
-  - [ ] Reddit
-  - [ ] TikTok
-  - [ ] LinkedIn *(may block)*
-  - [ ] Pinterest *(bonus)*
-- [ ] Report `yes` / `no` per platform based on HTTP 200 vs 404
-- [ ] Write result to output file
+### Phase 3 — Username Check (`-u`) ✅
+- [x] Strip leading `@` from input
+- [x] Check 5+ platforms via HTTP HEAD/GET requests:
+  - [x] GitHub
+  - [x] Instagram
+  - [x] Twitter/X
+  - [x] Reddit
+  - [x] TikTok
+  - [x] LinkedIn *(may block)*
+  - [x] Pinterest *(bonus)*
+- [x] Report `yes` / `no` per platform based on HTTP 200 vs 404
+- [x] Write result to output file
 
-### Phase 4 — Full Name (`-fn`)
-- [ ] Parse `"First Last"` → split into first/last name
-- [ ] Query a people-search API or scrape a public directory
-  - Best free option: Truecaller unofficial search or Whitepages scrape
-  - Simpler fallback: placeholder with graceful "no results found"
-  - Realistic target for demo: use Pages Blanches (French public directory)
-- [ ] Display: First name, Last name, Address, Phone
-- [ ] Write result to output file
+### Phase 4 — Full Name (`-fn`) ✅
+- [x] Parse `"First Last"` → split into first/last name
+- [x] Query a people-search API or scrape a public directory
+  - France: Pages Blanches via pagesjaunes.fr (Playwright, JS-rendered)
+  - UK: 192.com Electoral Roll (Playwright, name + area + ER year)
+  - Brazil: no free public directory available — telelistas.net offline
+- [x] Display: First name, Last name, Address, Phone
+- [x] Write result to output file
 
-### Phase 5 — Polish
-- [ ] Add error handling (network timeout, bad input, API failures)
-- [ ] Add `--help` formatted banner (`Welcome to passive v1.0.0`)
-- [ ] Write `README.md` with install/usage instructions
-- [ ] Test all three modes end-to-end
+### Phase 5 — Polish ✅
+- [x] Add error handling (network timeout, bad input, API failures)
+- [x] Add `--help` formatted banner (`Welcome to passive v1.0.0`)
+- [x] Write `README.md` with install/usage instructions
+- [x] Test all three modes end-to-end
 
 ---
 
