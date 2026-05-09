@@ -21,7 +21,7 @@ section() { echo -e "\n${YELLOW}${BOLD}── $1 ──${NC}"; }
 
 section "Required files"
 
-for f in passive.py README.md output.py modules/ip_lookup.py modules/username.py modules/fullname.py; do
+for f in passive.py README.md output.py modules/ip_lookup.py modules/username.py modules/fullname.py modules/phone.py; do
     if [ -f "$f" ]; then
         pass "$f present"
     else
@@ -46,8 +46,8 @@ else
         fail "--help missing banner"
     fi
 
-    if echo "$help_out" | grep -qE "\-fn|\-ip|\-u"; then
-        pass "--help shows all three flags"
+    if echo "$help_out" | grep -qE "\-fn|\-ip|\-u|\-ph"; then
+        pass "--help shows all four flags"
     else
         fail "--help missing one or more flags"
     fi
@@ -99,6 +99,7 @@ section "Flag -u  (passive -u \"@user01\")"
 echo "  note: Playwright is loading pages — this may take up to 2 min"
 
 # python3 subprocess kills the full process tree on timeout (macOS-safe)
+u_start=$SECONDS
 u_out=$(python3 - <<'PYEOF' 2>&1
 import subprocess, sys
 try:
@@ -110,6 +111,8 @@ except subprocess.TimeoutExpired:
 PYEOF
 )
 u_exit=$?
+u_elapsed=$((SECONDS - u_start))
+echo "  completed in ${u_elapsed}s"
 
 if [ $u_exit -eq 124 ]; then
     fail "command timed out after 300s"
@@ -166,6 +169,36 @@ else
     else
         fail "result file not saved"
     fi
+fi
+
+# ── 7. -ph "+33612345678" ─────────────────────────────────────────────────────
+
+echo -e "\n${RED}${BOLD}🎯 Bonus${NC}${BOLD} — Flag -ph  (passive -ph \"+33612345678\") ──${NC}"
+
+ph_out=$(passive -ph "+33612345678" 2>&1)
+
+if echo "$ph_out" | grep -q "Valid:"; then
+    pass "Valid field present"
+else
+    fail "Valid field missing"
+fi
+
+if echo "$ph_out" | grep -q "Country:"; then
+    pass "Country field present"
+else
+    fail "Country field missing"
+fi
+
+if echo "$ph_out" | grep -q "Carrier:"; then
+    pass "Carrier field present"
+else
+    fail "Carrier field missing"
+fi
+
+if echo "$ph_out" | grep -q "Saved in"; then
+    pass "result file saved"
+else
+    fail "result file not saved"
 fi
 
 # ── Summary ───────────────────────────────────────────────────────────────────

@@ -59,6 +59,7 @@ Installs:
 | `requests` | 2.33.1 | IP lookup, username HTTP probing |
 | `playwright` | 1.59.0 | JS-rendered page scraping (username + full name) |
 | `beautifulsoup4` | 4.14.3 | HTML parsing for full name results |
+| `phonenumbers` | latest | Phone number validation, carrier, and location lookup |
 
 ### 5. Install the Playwright browser
 
@@ -98,6 +99,26 @@ OPTIONS:
 ---
 
 ## Usage
+
+### Phone number lookup
+
+Returns carrier, location, type, and validity for a phone number.
+The number must include the country code.
+
+```bash
+passive -ph "+33612345678"
+```
+
+```
+Phone:    +33 6 12 34 56 78
+Valid:    yes
+Type:     mobile
+Country:  FR
+Location: France
+Carrier:  SFR
+
+Saved in output/result.txt
+```
 
 ### Full name lookup
 

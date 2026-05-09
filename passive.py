@@ -10,6 +10,7 @@ import requests
 from modules.ip_lookup import lookup_ip
 from modules.username import lookup_username
 from modules.fullname import lookup_fullname
+from modules.phone import lookup_phone
 from output import save_result
 
 BANNER = "Welcome to passive v1.0.0"
@@ -17,7 +18,8 @@ BANNER = "Welcome to passive v1.0.0"
 OPTIONS = """OPTIONS:
     -fn         Search with full-name
     -ip         Search with ip address
-    -u          Search with username"""
+    -u          Search with username
+    -ph         Search with phone number"""
 
 
 def build_parser():
@@ -28,9 +30,10 @@ def build_parser():
         add_help=True,
     )
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("-fn", metavar="FULL_NAME",   help="Search by full name")
+    group.add_argument("-fn", metavar="FULL_NAME",    help="Search by full name")
     group.add_argument("-ip", metavar="IP_ADDRESS",  help="Search by IP address")
     group.add_argument("-u",  metavar="USERNAME",    help="Search by username")
+    group.add_argument("-ph", metavar="PHONE",       help="Search by phone number (include country code, e.g. +33612345678)")
     return parser
 
 
@@ -51,6 +54,8 @@ def main():
             result = lookup_username(args.u)
         elif args.fn:
             result = lookup_fullname(args.fn)
+        elif args.ph:
+            result = lookup_phone(args.ph)
     except ValueError as e:
         print(f"Error: {e}")
         sys.exit(1)

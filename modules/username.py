@@ -1,6 +1,7 @@
 # Checks whether a username exists across multiple social platforms.
 # requests-based for most platforms; Playwright (headless Chromium) for JS-heavy ones.
 
+import multiprocessing
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from playwright.sync_api import sync_playwright
@@ -133,6 +134,20 @@ def _probe_playwright_page(browser, platform: dict, username: str) -> tuple[str,
         return platform["name"], url, "error"
 
 
+def _pw_worker(result_queue, pw_platforms, username):
+    pw_results = {}
+    try:
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            for p in pw_platforms:
+                name, url, status = _probe_playwright_page(browser, p, username)
+                pw_results[name] = (url, status)
+            browser.close()
+    except Exception:
+        pass
+    result_queue.put(pw_results)
+
+
 def lookup_username(username: str) -> str:
     username = username.lstrip("@")
 
@@ -146,16 +161,30 @@ def lookup_username(username: str) -> str:
             name, url, status = future.result()
             results[name] = (url, status)
 
-    # Run Playwright-based probes sequentially sharing one browser instance —
-    # launching Chromium once instead of once per platform saves ~30-40 seconds
+    # Run Playwright probes in a child process — multiprocessing allows a hard
+    # terminate/kill if Playwright hangs at the OS level, which threads cannot do.
     pw_platforms = [p for p in PLATFORMS if p["method"] == "playwright"]
     if pw_platforms:
-        with sync_playwright() as pw:
-            browser = pw.chromium.launch(headless=True)
-            for p in pw_platforms:
-                name, url, status = _probe_playwright_page(browser, p, username)
-                results[name] = (url, status)
-            browser.close()
+        q = multiprocessing.Queue()
+        proc = multiprocessing.Process(
+            target=_pw_worker, args=(q, pw_platforms, username), daemon=True
+        )
+        proc.start()
+        proc.join(timeout=90)
+        if proc.is_alive():
+            proc.terminate()
+            proc.join(timeout=3)
+            if proc.is_alive():
+                proc.kill()
+
+        try:
+            pw_results = q.get_nowait()
+        except Exception:
+            pw_results = {}
+
+        for p in pw_platforms:
+            url = p["url"].format(username)
+            results[p["name"]] = pw_results.get(p["name"], (url, "error"))
 
     lines = [f"Username: @{username}\n"]
     for p in PLATFORMS:
