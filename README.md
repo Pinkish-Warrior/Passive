@@ -41,6 +41,7 @@ OPTIONS:
     -fn         Search with full-name
     -ip         Search with ip address
     -u          Search with username
+    -ph         Search with phone number
 ```
 
 ### Full name lookup (`-fn`)
@@ -91,6 +92,23 @@ City:         Ashburn, United States
 City Lat/Lon: (39.03) / (-77.5)
 
 Saved in result3.txt
+```
+
+### Phone number lookup (`-ph`)
+
+Returns carrier, location, type, and validity. Number must include the country code.
+
+```
+passive -ph "+33612345678"
+
+Phone:    +33 6 12 34 56 78
+Valid:    yes
+Type:     mobile
+Country:  FR
+Location: France
+Carrier:  SFR
+
+Saved in result4.txt
 ```
 
 ### Username lookup (`-u`)
@@ -151,3 +169,9 @@ Results are saved automatically to the `output/` folder:
 ---
 
 > These methods are for educational purposes only. Only use this tool against targets you have explicit permission to research.
+
+---
+
+## Audit results
+
+![Audit results](docs/audit.png)
