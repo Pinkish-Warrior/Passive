@@ -1,3 +1,7 @@
+See [SETUP.md](SETUP.md#audit) for instructions on how to run the automated audit script.
+
+---
+
 #### General
 
 ###### Is the student able to explain clearly the used investigative methods?
