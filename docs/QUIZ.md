@@ -308,13 +308,13 @@
 
 ---
 
-### Q28 — No free directory for Brazil
+### Q28 — No directory for Brazil
 
-**Why does the `-fn` module return "No free public directory available" for Brazil?**
+**Why does the `-fn` module return no results for Brazil?**
 
 - [ ] A. Brazilian law prohibits scraping public directories
-- [ ] B. Brazil doesn't have public phone directories
-- [✅] C. The only known Brazilian public directory (telelistas.net) is offline — no free alternative exists
-- [ ] D. Playwright cannot render Portuguese-language websites
+- [ ] B. Brazil has no public phone directories at all
+- [ ] C. telelistas.net is fully offline and unreachable
+- [✅] D. There is no freely scrapable public person directory for Brazil — telelistas.net now redirects and blocks scrapers, and ddd.telelistas.net is a DDD area code lookup, not a person search
 
 ---

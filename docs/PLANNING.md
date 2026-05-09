@@ -52,7 +52,7 @@ passive/
 - [x] Query a people-search API or scrape a public directory
   - France: Pages Blanches via pagesjaunes.fr (Playwright, JS-rendered)
   - UK: 192.com Electoral Roll (Playwright, name + area + ER year)
-  - Brazil: no free public directory available — telelistas.net offline
+  - Brazil: no accessible public person directory — telelistas.net blocks scrapers, ddd.telelistas.net is a DDD area code lookup only
 - [x] Display: First name, Last name, Address, Phone
 - [x] Write result to output file
 

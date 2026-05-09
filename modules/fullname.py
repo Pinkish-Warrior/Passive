@@ -1,7 +1,8 @@
 # Looks up a person across public directories in France, UK, and Brazil.
 # France : Pages Blanches (pagesjaunes.fr)  — full address + phone
 # UK     : 192.com                          — name + area + electoral-roll year
-# Brazil : no free public directory available (telelistas.net is offline)
+# Brazil : no accessible public person directory — telelistas.net redirects and blocks scrapers,
+#          ddd.telelistas.net is a DDD area code lookup only (not a person directory)
 #
 # Uses Playwright for both sources because results are JS-rendered.
 # Falls back gracefully if a source is unreachable or returns nothing.
@@ -156,7 +157,7 @@ def lookup_fullname(full_name: str) -> str:
     # Brazil
     sections.append(_section(
         "Brazil",
-        ["  No free public directory available — telelistas.net is offline."]
+        ["  No accessible public person directory available — telelistas.net blocks scrapers,\n  ddd.telelistas.net is a DDD area code lookup only."]
     ))
 
     return header + "\n" + "\n\n".join(sections)
