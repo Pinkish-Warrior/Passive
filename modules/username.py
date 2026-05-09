@@ -104,32 +104,31 @@ NOT_FOUND_URL_PATTERNS = [
 ]
 
 
-def _probe_playwright(platform: dict, username: str) -> tuple[str, str, str]:
+def _probe_playwright_page(browser, platform: dict, username: str) -> tuple[str, str, str]:
+    # Accepts a shared browser instance — avoids re-launching Chromium per probe
     url = platform["url"].format(username)
     try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page(extra_http_headers=HEADERS)
+        page = browser.new_page(extra_http_headers=HEADERS)
+        try:
+            page.goto(url, timeout=PW_TIMEOUT, wait_until="domcontentloaded")
             try:
-                page.goto(url, timeout=PW_TIMEOUT, wait_until="domcontentloaded")
-                try:
-                    page.wait_for_load_state("networkidle", timeout=5000)
-                except Exception:
-                    pass  # some SPAs never reach networkidle
-                final_url = page.url.lower()
-                if any(pattern in final_url for pattern in LOGIN_WALL_PATTERNS):
-                    return platform["name"], url, "requires auth"
-                if any(pattern in final_url for pattern in NOT_FOUND_URL_PATTERNS):
-                    return platform["name"], url, "no"
-                title = page.title().lower()
-                if any(hint.lower() in title for hint in platform.get("not_found_title", [])):
-                    return platform["name"], url, "no"
-                body = page.content().lower()
-                if any(hint.lower() in body for hint in platform["not_found"]):
-                    return platform["name"], url, "no"
-                return platform["name"], url, "yes"
-            finally:
-                browser.close()
+                page.wait_for_load_state("networkidle", timeout=5000)
+            except Exception:
+                pass  # some SPAs never reach networkidle
+            final_url = page.url.lower()
+            if any(pattern in final_url for pattern in LOGIN_WALL_PATTERNS):
+                return platform["name"], url, "requires auth"
+            if any(pattern in final_url for pattern in NOT_FOUND_URL_PATTERNS):
+                return platform["name"], url, "no"
+            title = page.title().lower()
+            if any(hint.lower() in title for hint in platform.get("not_found_title", [])):
+                return platform["name"], url, "no"
+            body = page.content().lower()
+            if any(hint.lower() in body for hint in platform["not_found"]):
+                return platform["name"], url, "no"
+            return platform["name"], url, "yes"
+        finally:
+            page.close()
     except Exception:
         return platform["name"], url, "error"
 
@@ -147,11 +146,16 @@ def lookup_username(username: str) -> str:
             name, url, status = future.result()
             results[name] = (url, status)
 
-    # Run Playwright-based probes sequentially to avoid event loop conflicts
-    for p in PLATFORMS:
-        if p["method"] == "playwright":
-            name, url, status = _probe_playwright(p, username)
-            results[name] = (url, status)
+    # Run Playwright-based probes sequentially sharing one browser instance —
+    # launching Chromium once instead of once per platform saves ~30-40 seconds
+    pw_platforms = [p for p in PLATFORMS if p["method"] == "playwright"]
+    if pw_platforms:
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            for p in pw_platforms:
+                name, url, status = _probe_playwright_page(browser, p, username)
+                results[name] = (url, status)
+            browser.close()
 
     lines = [f"Username: @{username}\n"]
     for p in PLATFORMS:

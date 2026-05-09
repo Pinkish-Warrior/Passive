@@ -96,47 +96,76 @@ fi
 # ── 5. -u "@user01" ───────────────────────────────────────────────────────────
 
 section "Flag -u  (passive -u \"@user01\")"
-echo "  note: Playwright is loading pages — this may take ~30s"
+echo "  note: Playwright is loading pages — this may take up to 2 min"
 
-u_out=$(passive -u "@user01" 2>&1)
+# python3 subprocess kills the full process tree on timeout (macOS-safe)
+u_out=$(python3 - <<'PYEOF' 2>&1
+import subprocess, sys
+try:
+    r = subprocess.run(["passive", "-u", "@user01"],
+                       capture_output=True, text=True, timeout=300)
+    print(r.stdout, end="")
+except subprocess.TimeoutExpired:
+    sys.exit(124)
+PYEOF
+)
+u_exit=$?
 
-platform_count=$(echo "$u_out" | grep -cE "\[(yes|no|error|requires auth|unknown)")
-
-if [ "$platform_count" -ge 5 ]; then
-    pass "$platform_count platforms checked (≥5 required)"
+if [ $u_exit -eq 124 ]; then
+    fail "command timed out after 300s"
 else
-    fail "only $platform_count platform(s) checked — need at least 5"
-fi
+    platform_count=$(echo "$u_out" | grep -cE "\[(yes|no|error|requires auth|unknown)")
 
-if echo "$u_out" | grep -q "Saved in"; then
-    pass "result file saved"
-else
-    fail "result file not saved"
+    if [ "$platform_count" -ge 5 ]; then
+        pass "$platform_count platforms checked (≥5 required)"
+    else
+        fail "only $platform_count platform(s) checked — need at least 5"
+    fi
+
+    if echo "$u_out" | grep -q "Saved in"; then
+        pass "result file saved"
+    else
+        fail "result file not saved"
+    fi
 fi
 
 # ── 6. -fn "Jean Dupont" ──────────────────────────────────────────────────────
 
 section "Flag -fn  (passive -fn \"Jean Dupont\")"
-echo "  note: Playwright is loading pages — this may take ~30s"
+echo "  note: Playwright is loading pages — this may take up to 2 min"
 
-fn_out=$(passive -fn "Jean Dupont" 2>&1)
+fn_out=$(python3 - <<'PYEOF' 2>&1
+import subprocess, sys
+try:
+    r = subprocess.run(["passive", "-fn", "Jean Dupont"],
+                       capture_output=True, text=True, timeout=300)
+    print(r.stdout, end="")
+except subprocess.TimeoutExpired:
+    sys.exit(124)
+PYEOF
+)
+fn_exit=$?
 
-if echo "$fn_out" | grep -q "Address:"; then
-    pass "address displayed"
+if [ $fn_exit -eq 124 ]; then
+    fail "command timed out after 300s"
 else
-    fail "address not displayed"
-fi
+    if echo "$fn_out" | grep -q "Address:"; then
+        pass "address displayed"
+    else
+        fail "address not displayed"
+    fi
 
-if echo "$fn_out" | grep -q "Phone:"; then
-    pass "phone number displayed"
-else
-    fail "phone number not displayed"
-fi
+    if echo "$fn_out" | grep -q "Phone:"; then
+        pass "phone number displayed"
+    else
+        fail "phone number not displayed"
+    fi
 
-if echo "$fn_out" | grep -q "Saved in"; then
-    pass "result file saved"
-else
-    fail "result file not saved"
+    if echo "$fn_out" | grep -q "Saved in"; then
+        pass "result file saved"
+    else
+        fail "result file not saved"
+    fi
 fi
 
 # ── Summary ───────────────────────────────────────────────────────────────────
