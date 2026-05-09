@@ -182,3 +182,139 @@
 - [ ] D. LinkedIn is down
 
 ---
+
+# Phase 3 — Bonus, Multiprocessing & Verbal Prep
+
+---
+
+### Q17 — phonenumbers library
+
+**Why does the `-ph` module not need an API key or internet connection?**
+
+- [ ] A. It calls a free government API that doesn't require authentication
+- [ ] B. It reads from the SIM card registry
+- [✅] C. The `phonenumbers` library ships with a bundled offline database of carrier and region data
+- [ ] D. It uses the phone's GPS to detect location
+
+---
+
+### Q18 — Phone number format
+
+**Why does `passive -ph "0612345678"` fail while `passive -ph "+33612345678"` works?**
+
+- [ ] A. The `-ph` flag only accepts numbers with more than 10 digits
+- [✅] B. `phonenumbers.parse()` requires a country code to know which numbering plan to use — without it, it raises `NumberParseException`
+- [ ] C. The `+` sign is required by the terminal, not the library
+- [ ] D. French numbers are not supported
+
+---
+
+### Q19 — Threading vs multiprocessing
+
+**Why did we switch from `threading.Thread` to `multiprocessing.Process` to fix the Playwright hang?**
+
+- [ ] A. Threads are slower than processes on macOS
+- [ ] B. Playwright doesn't support threads at all
+- [✅] C. Playwright's internal asyncio threads are non-daemon and prevent Python from exiting — a process can be hard-killed with `terminate()`, a thread cannot
+- [ ] D. The `threading` module is deprecated in Python 3.14
+
+---
+
+### Q20 — daemon=True
+
+**What does `daemon=True` do when set on a `multiprocessing.Process`?**
+
+- [ ] A. It makes the process run with administrator privileges
+- [ ] B. It makes the process run silently without any output
+- [✅] C. It ensures the child process is automatically killed if the parent process exits, preventing zombie processes
+- [ ] D. It runs the process in the background on a separate CPU core only
+
+---
+
+### Q21 — proc.terminate() vs proc.kill()
+
+**Why do we call `proc.terminate()` first and only call `proc.kill()` if the process is still alive?**
+
+- [✅] A. `terminate()` sends SIGTERM which allows the process to clean up gracefully; `kill()` sends SIGKILL which forces an immediate stop with no cleanup
+- [ ] B. `kill()` is slower than `terminate()`
+- [ ] C. `terminate()` only works on Linux, `kill()` works on macOS
+- [ ] D. Both do the same thing — the second call is just a safety net
+
+---
+
+### Q22 — Sequential file naming
+
+**What would happen if `output.py` used `if` instead of `while` to check for existing files?**
+
+- [ ] A. Nothing — `if` and `while` behave the same way here
+- [ ] B. The file would never be created
+- [✅] C. It would only skip one existing file — if both `result.txt` and `result2.txt` exist, it would overwrite `result2.txt`
+- [ ] D. Python would raise a `FileExistsError`
+
+---
+
+### Q23 — Playwright timeout not firing
+
+**Why can Playwright's `page.goto(timeout=15000)` fail to stop a hang even though the timeout is set?**
+
+- [ ] A. The timeout parameter is ignored by Playwright on macOS
+- [ ] B. 15 seconds is too short for modern websites
+- [✅] C. The timeout is implemented in JavaScript/Node.js — if the underlying OS or network blocks at a lower level (DNS, TCP handshake), the Python layer never receives the signal
+- [ ] D. The timeout only applies to the first page load, not redirects
+
+---
+
+### Q24 — OSINT definition (verbal)
+
+**What does OSINT stand for and why is it the first phase of a penetration test?**
+
+- [ ] A. Open System Intelligence — because it maps the network topology before attacking
+- [ ] B. Online Source Investigation — because it gathers credentials before testing
+- [✅] C. Open Source Intelligence — because the more publicly available information you gather before touching the target, the more precise and effective the rest of the engagement is
+- [ ] D. Offensive Security Intelligence — because it identifies vulnerabilities in public APIs
+
+---
+
+### Q25 — Why Playwright for Pages Blanches
+
+**Why does the full-name module use Playwright instead of `requests` for Pages Blanches and 192.com?**
+
+- [ ] A. Both sites require a login that Playwright handles automatically
+- [ ] B. The sites block requests without a real browser header
+- [✅] C. Both sites render their search results via JavaScript — a plain HTTP GET returns an empty HTML shell with no results
+- [ ] D. Playwright is faster than requests for French websites
+
+---
+
+### Q26 — BeautifulSoup role
+
+**What is BeautifulSoup's role in the `-fn` module, and what does Playwright do that makes it necessary?**
+
+- [ ] A. BeautifulSoup fetches the page; Playwright parses it
+- [✅] B. Playwright navigates to the page and returns the fully rendered HTML; BeautifulSoup then parses that HTML to extract names, addresses, and phone numbers
+- [ ] C. BeautifulSoup handles JavaScript; Playwright handles static HTML
+- [ ] D. Playwright is only used as a fallback when BeautifulSoup fails
+
+---
+
+### Q27 — `requires auth` status
+
+**What does `[requires auth]` mean in the `-u` output, and how is it detected?**
+
+- [ ] A. The platform returned a 403 HTTP status code
+- [ ] B. The platform's API rejected our User-Agent header
+- [✅] C. Playwright detected a redirect to a login URL (e.g. `twitter.com/i/flow/login`) — the user might exist but the platform demands a login before showing the profile
+- [ ] D. The username contains special characters that triggered a security check
+
+---
+
+### Q28 — No free directory for Brazil
+
+**Why does the `-fn` module return "No free public directory available" for Brazil?**
+
+- [ ] A. Brazilian law prohibits scraping public directories
+- [ ] B. Brazil doesn't have public phone directories
+- [✅] C. The only known Brazilian public directory (telelistas.net) is offline — no free alternative exists
+- [ ] D. Playwright cannot render Portuguese-language websites
+
+---
