@@ -138,7 +138,11 @@ def lookup_fullname(full_name: str) -> str:
                 lines.append("")
         sections.append(_section("France — Pages Blanches", lines))
     else:
-        sections.append(_section("France — Pages Blanches", ["  No results found."]))
+        sections.append(_section("France — Pages Blanches", [
+            "  No results found.",
+            "    Address: N/A",
+            "    Phone:   N/A",
+        ]))
 
     # UK
     uk = _lookup_uk(first, last)
