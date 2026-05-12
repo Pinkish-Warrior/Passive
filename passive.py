@@ -15,18 +15,11 @@ from output import save_result
 
 BANNER = "Welcome to passive v1.0.0"
 
-OPTIONS = """OPTIONS:
-    -fn         Search with full-name
-    -ip         Search with ip address
-    -u          Search with username
-    -ph         Search with phone number"""
-
 
 def build_parser():
-    # Only one flag allowed per run; all three are mutually exclusive
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        description=f"{BANNER}\n\n{OPTIONS}",
+        description=BANNER,
         add_help=True,
     )
     group = parser.add_mutually_exclusive_group(required=True)

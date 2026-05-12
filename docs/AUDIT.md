@@ -2,15 +2,43 @@ See [SETUP.md](SETUP.md#audit) for instructions on how to run the automated audi
 
 ---
 
-#### General
+## General Questions — Answers
 
-###### Is the student able to explain clearly the used investigative methods?
+### Is the student able to explain clearly the used investigative methods?
 
-###### Is the student able to explain clearly what OSINT means?
+Yes. Three distinct methods are used depending on the flag:
 
-###### Is the student able to explain clearly how his program works?
+- **`-ip`** — A single HTTP GET request is sent to the free `ip-api.com` JSON endpoint. The response includes the city, region, country, ISP, and geographic coordinates. No API key or authentication is required.
+- **`-u`** — For most platforms (GitHub, Reddit, TikTok, LinkedIn) a standard HTTP GET is issued to the profile URL; an HTTP 200 confirms the account exists and a 404 confirms it does not. For JavaScript-heavy platforms (Twitter/X, Instagram, Pinterest) a Playwright headless Chromium browser loads the page fully before the result is evaluated.
+- **`-fn`** — Both Pages Blanches (France) and 192.com (UK) build their search results entirely in JavaScript, so a raw HTTP request would return an empty page. Playwright navigates to the search URL, waits for the DOM to settle, and then BeautifulSoup parses the rendered HTML to extract names, addresses, and phone numbers.
 
-##### Check the Repo content
+All three methods rely exclusively on public sources — no login, no scraping of private data, and no direct contact with the target.
+
+---
+
+### Is the student able to explain clearly what OSINT means?
+
+Yes. OSINT stands for **Open Source Intelligence** — collecting information about a target using only publicly available sources, with no direct interaction with the target system. Sources include public directories, social media, DNS records, IP geolocation databases, and government registries. It is typically the first phase of a penetration test: the more that is known about a target before any active probing begins, the more precise and effective the rest of the engagement becomes. It is also entirely passive — the target has no way to detect that reconnaissance is taking place.
+
+---
+
+### Is the student able to explain clearly how his program works?
+
+Yes. The program is invoked from the terminal as `passive` followed by exactly one flag and its argument:
+
+```
+passive -fn "Jean Dupont"
+passive -ip 8.8.8.8
+passive -u "@someuser"
+```
+
+Internally:
+
+1. `passive.py` parses arguments with `argparse` using a mutually exclusive group, so only one flag is accepted per run.
+2. The matching lookup function is called: `lookup_ip()`, `lookup_username()`, or `lookup_fullname()`.
+3. The function fetches data from its source(s), parses the response, and returns a formatted result string.
+4. The result is printed to the terminal.
+5. `output.py` writes the result to `output/result.txt`. If that file already exists, it increments the suffix (`result2.txt`, `result3.txt`, …) until a free filename is found, so no previous result is ever overwritten.
 
 Files that must be inside your repository:
 
@@ -90,3 +118,43 @@ OSINT stands for **Open Source Intelligence** — the practice of collecting inf
 4. The module fetches data from its source(s), parses the response, and returns a formatted string.
 5. The result is printed to the terminal and passed to `output.py`, which saves it to `output/result.txt` — or `result2.txt`, `result3.txt`, and so on if previous files already exist.
 6. The program exits cleanly, with specific error messages for network timeouts, bad input, or unreachable hosts.
+
+---
+
+## General Questions — Answers
+
+### Is the student able to explain clearly the used investigative methods?
+
+Yes. Three distinct methods are used depending on the flag:
+
+- **`-ip`** — A single HTTP GET request is sent to the free `ip-api.com` JSON endpoint. The response includes the city, region, country, ISP, and geographic coordinates. No API key or authentication is required.
+- **`-u`** — For most platforms (GitHub, Reddit, TikTok, LinkedIn) a standard HTTP GET is issued to the profile URL; an HTTP 200 confirms the account exists and a 404 confirms it does not. For JavaScript-heavy platforms (Twitter/X, Instagram, Pinterest) a Playwright headless Chromium browser loads the page fully before the result is evaluated.
+- **`-fn`** — Both Pages Blanches (France) and 192.com (UK) build their search results entirely in JavaScript, so a raw HTTP request would return an empty page. Playwright navigates to the search URL, waits for the DOM to settle, and then BeautifulSoup parses the rendered HTML to extract names, addresses, and phone numbers.
+
+All three methods rely exclusively on public sources — no login, no scraping of private data, and no direct contact with the target.
+
+---
+
+### Is the student able to explain clearly what OSINT means?
+
+Yes. OSINT stands for **Open Source Intelligence** — collecting information about a target using only publicly available sources, with no direct interaction with the target system. Sources include public directories, social media, DNS records, IP geolocation databases, and government registries. It is typically the first phase of a penetration test: the more that is known about a target before any active probing begins, the more precise and effective the rest of the engagement becomes. It is also entirely passive — the target has no way to detect that reconnaissance is taking place.
+
+---
+
+### Is the student able to explain clearly how his program works?
+
+Yes. The program is invoked from the terminal as `passive` followed by exactly one flag and its argument:
+
+```
+passive -fn "Jean Dupont"
+passive -ip 8.8.8.8
+passive -u "@someuser"
+```
+
+Internally:
+
+1. `passive.py` parses arguments with `argparse` using a mutually exclusive group, so only one flag is accepted per run.
+2. The matching lookup function is called: `lookup_ip()`, `lookup_username()`, or `lookup_fullname()`.
+3. The function fetches data from its source(s), parses the response, and returns a formatted result string.
+4. The result is printed to the terminal.
+5. `output.py` writes the result to `output/result.txt`. If that file already exists, it increments the suffix (`result2.txt`, `result3.txt`, …) until a free filename is found, so no previous result is ever overwritten.
